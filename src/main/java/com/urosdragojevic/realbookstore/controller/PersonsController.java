@@ -56,12 +56,12 @@ public class PersonsController {
     }
 
     @PostMapping("/update-person")
-    public String updatePerson(Person person, HttpSession session, @RequestParam("csrfToken") String csrfToken) {
-        throws AccessDeniedException {
-            String csrf = session.getAttribute("CSRF_TOKEN").toString();
-            if(csrf == null || !csrf.equals(csrfToken)) {
-                throw new AccessDeniedException("Forbidden");
-            }
+    public String updatePerson(Person person, HttpSession session, @RequestParam("csrfToken") String csrfToken)
+            throws AccessDeniedException {
+        String csrf = session.getAttribute("CSRF_TOKEN").toString();
+        if(!csrf.equals(csrfToken)) {
+            throw new AccessDeniedException("Forbidden");
+        }
         personRepository.update(person);
         return "redirect:/persons/" + person.getId();
     }

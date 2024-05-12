@@ -7,10 +7,10 @@
           <option name="delegateBuildToMaven" value="false" />
           <option name="environmentProperties">
             <map>
-              <entry key="SONAR_TOKEN" value="&lt;insert_token_here&gt;" />
+              <entry key="SONAR_TOKEN" value="sqa_f53f1503363bf51efd7713e9613baf541b7e66e5" />
             </map>
           </option>
-          <option name="jreName" value="#USE_PROJECT_JDK" />
+          <option name="jreName" value="corretto-17" />
           <option name="mavenProperties">
             <map />
           </option>
@@ -31,6 +31,7 @@
               <option value="sonar:sonar" />
             </list>
           </option>
+          <option name="multimoduleDir" />
           <option name="pomFileName" />
           <option name="profilesMap">
             <map />
