@@ -36,7 +36,7 @@ public class BookRepository {
                 bookList.add(book);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Fetching all books caused an error.", e);
         }
         return bookList;
     }
@@ -54,6 +54,8 @@ public class BookRepository {
             while (rs.next()) {
                 bookList.add(createBookFromResultSet(rs));
             }
+        } catch (SQLException e) {
+            LOG.warn("Something went wrong while fetching books. Check searchTerm: {}.", searchTerm, e);
         }
         return bookList;
     }
@@ -67,7 +69,7 @@ public class BookRepository {
                 return createBookFromResultSet(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Fetching book with id: {} caused an error.", bookId, e);
         }
         return null;
     }
@@ -94,12 +96,13 @@ public class BookRepository {
                         statement2.setInt(2, genre.getId());
                         statement2.executeUpdate();
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        LOG.error("Inserting genre for the book(id): {} caused an error.", finalId, e);
                     }
                 });
+                LOG.info("Book with id: {} successfully created.", finalId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Creating new book caused an error.", e);
         }
         return id;
     }
@@ -116,8 +119,9 @@ public class BookRepository {
             statement.executeUpdate(query2);
             statement.executeUpdate(query3);
             statement.executeUpdate(query4);
+            auditLogger.audit("Book with id: " + bookId + " successfully deleted.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Deleting book with id: {} caused an error.", bookId, e);
         }
     }
 

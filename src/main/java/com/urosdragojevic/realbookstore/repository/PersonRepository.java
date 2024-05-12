@@ -1,6 +1,7 @@
 package com.urosdragojevic.realbookstore.repository;
 
 import com.urosdragojevic.realbookstore.audit.AuditLogger;
+import com.urosdragojevic.realbookstore.audit.Entity;
 import com.urosdragojevic.realbookstore.domain.Person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class PersonRepository {
                 personList.add(createPersonFromResultSet(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Fetching all persons caused an error.", e);
         }
         return personList;
     }
@@ -48,6 +49,8 @@ public class PersonRepository {
             while (rs.next()) {
                 personList.add(createPersonFromResultSet(rs));
             }
+        } catch (SQLException e) {
+            LOG.warn("Something went wrong while fetching persons. Check searchTerm: {}.", searchTerm, e);
         }
         return personList;
     }
@@ -61,7 +64,7 @@ public class PersonRepository {
                 return createPersonFromResultSet(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Fetching person with id: {} caused an error.", personId, e);
         }
 
         return null;
@@ -73,8 +76,9 @@ public class PersonRepository {
              Statement statement = connection.createStatement();
         ) {
             statement.executeUpdate(query);
+            auditLogger.audit("Person with id: " + personId + " successfully deleted.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Deleting person with id: {} caused an error.", personId, e);
         }
     }
 
@@ -98,8 +102,14 @@ public class PersonRepository {
             statement.setString(1, firstName);
             statement.setString(2, email);
             statement.executeUpdate();
+            if(!personUpdate.getFirstName().equals(personFromDb.getFirstName()) || !personUpdate.getEmail().equals(personFromDb.getEmail())) {
+                auditLogger.auditChange(new Entity("UpdatedPerson",
+                        String.valueOf(personFromDb.getId()),
+                        String.valueOf(personFromDb),
+                        String.valueOf(personUpdate)));
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Updating person with id: {} caused an error.", personUpdate.getId(), e);
         }
     }
 }
